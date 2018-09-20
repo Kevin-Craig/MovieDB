@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieDB</title>
+    <style>
+        #content {
+            width: 1000px;
+        }
+        .resultItem {
+            border: 1px solid;
+            margin: 10px 0 10px 0;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function doSearch() {
+            let title = $("#movieTitle").val();
+            $.ajax({
+                url: 'search.php',
+                type: 'POST',
+                data: {title: title},
+                success: function (data) {
+                    let jsondata = JSON.parse(data);
+                    // If good data, then continue
+                    let html = "";
+                    // Only list all search results if less than 10
+                    let num = jsondata.total_results;
+                    if (jsondata.total_results > 10) {
+                        num = 10;
+                    }
+                    // Loop through each result and create the HTML to display
+                    for (let i = 0; i < num; i++) {
+                        html += `<div class="resultItem"><h3>` + (i + 1) + `</h3>Owned: <input type="checkbox">` +
+                            `<p>Title: ` + jsondata.results[i].title + `</p>` +
+                            `<p>Release Date: ` + jsondata.results[i].release_date + `</p>` +
+                            `<p>Overview: ` + jsondata.results[i].overview + `</p></div>`;
+                    }
+                    html += `<h1>Total Results: ` + jsondata.total_results + `</h1>`;
+                    // Put the content on the page
+                    $("#results").html(html);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div id="content">
+        <div id="head">
+            <h1>MovieDB Search</h1><br>
+            <input type="text" id="movieTitle" placeholder="Search for a Movie...">
+            <button type="submit" onclick="doSearch()">Search</button>
+        </div>
+        <div id="results"></div>
+    </div>
+</div>
+</body>
+</html>
